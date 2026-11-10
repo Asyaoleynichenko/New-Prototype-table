@@ -1319,7 +1319,7 @@ function StorageCard() {
               { bg: PG.avatarSvg2, icon: PG.avatarUser },
             ] as const).map((a, i) => (
               <div key={i} style={{
-                width: 30, height: 32, marginRight: -6,
+                width: 32, height: 32, flexShrink: 0, marginRight: -6,
                 borderRadius: '50%',
                 overflow: 'hidden', position: 'relative', zIndex: 3 - i,
                 boxShadow: '0 0 0 2px white',
