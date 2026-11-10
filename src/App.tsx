@@ -39,10 +39,12 @@ const PG = {
   avatarSvg1:  `${AP}/54cc3.svg`,
   avatarSvg2:  `${AP}/621ae.svg`,
   avatarUser:  `${AP}/f7da4.svg`,
+  avatarRing:  `${AP}/aed0c.svg`,
   counter:     `${AP}/b7469.svg`,
   // actions card
   promoIcon:   `${AP}/f6c7c.svg`,
   histIcon:    `${AP}/5772d.svg`,
+  payIcon:     `${AP}/b2d5f.svg`,
   chevron:     `${AP}/d30fa.svg`,
   // included features
   cloudIco:    `${AP}/cf901.svg`,
@@ -250,7 +252,7 @@ const PLANS: PlanDef[] = [
   },
   {
     id: 'main', name: 'Основной',
-    sub: 'Все самое нужно для\u00a0повседневных задач', bg: '#f0f7ff',
+    sub: 'Все самое нужно для повседневных задач', bg: '#f0f7ff',
     price: 'от 87 ₽', disc: 'до −79%', cap: 'до 2 ТБ',
     hint: 'Безлимит для\u00a0фото с\u00a0телефона, удаление дубликатов, загрузка файлов до\u00a0100\u00a0ГБ и\u00a0без\u00a0рекламы в\u00a0Почте и\u00a0Облаке',
     bullets: [
@@ -309,7 +311,7 @@ const PAID_PLANS: PlanDef[] = [
   },
   {
     ...PLANS[1],
-    sub: 'Все самое нужно для\u00a0повседневных задач',
+    sub: 'Все самое нужно для повседневных задач',
     hint: 'Безлимит для\u00a0фото с\u00a0телефона, удаление дубликатов, загрузка файлов до\u00a0100\u00a0ГБ и\u00a0без\u00a0рекламы в\u00a0Почте и\u00a0Облаке',
   },
   {
@@ -732,12 +734,12 @@ function NewBadge() {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      height: 22, margin: '-1px 0', padding: '0 6px', borderRadius: 100,
+      height: 24, margin: '-2px 0', padding: '0 6px', borderRadius: 100,
       background: '#b8fc75', transform: 'rotate(-5deg)', flexShrink: 0,
     }}>
       <span style={{
         fontFamily: "var(--fontfamilyaccent)",
-        color: '#087c6d', fontSize: 13, lineHeight: '18px', whiteSpace: 'nowrap',
+        color: '#087c6d', fontSize: 15, lineHeight: '20px', whiteSpace: 'nowrap',
       }}>New</span>
     </span>
   )
@@ -866,12 +868,24 @@ function FeatureRow({ feat, demo, onDemoEnd, onRowHover, rowRef }: {
           boxSizing: 'border-box' as const,
           width: label + tablePad,
           marginLeft: -tablePad,
-          paddingLeft: tablePad + 12,
-          background: hot ? '#f4f5f6' : '#fff',
-          boxShadow: hot ? '8px 0 0 #f4f5f6' : '8px 0 0 #fff',
-          transition: 'background 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1)',
-        } : { position: 'relative' as const, paddingLeft: 12 }),
+          paddingLeft: tablePad + (feat.isNew ? 10 : 12),
+          alignSelf: 'stretch',
+          marginTop: -4, marginBottom: -4,
+          paddingTop: 4, paddingBottom: 4,
+          background: '#fff',
+          boxShadow: '8px 0 0 #fff',
+        } : { position: 'relative' as const, paddingLeft: feat.isNew ? 10 : 12 }),
       }}>
+        {carousel && (
+          <span aria-hidden style={{
+            position: 'absolute', zIndex: -1,
+            top: 0, bottom: 0, left: tablePad, right: -8,
+            borderRadius: '8px 0 0 8px',
+            background: hot ? '#f4f5f6' : 'transparent',
+            transition: 'background 180ms cubic-bezier(0.16, 1, 0.3, 1)',
+            pointerEvents: 'none',
+          }} />
+        )}
         {feat.isNew && <NewBadge />}
         <span style={{
           fontFamily: "var(--fontfamilybase)",
@@ -976,7 +990,6 @@ function PlanCard({ plan }: { plan: PlanDef }) {
       border: plan.border,
       borderRadius: 20,
       padding: compactCard ? '28px 10px 12px' : '16px 20px 20px',
-      minHeight: compactCard ? 0 : 182,
       height: compactCard ? '100%' : undefined,
       boxSizing: 'border-box',
       display: 'flex',
@@ -1020,11 +1033,11 @@ function PlanCard({ plan }: { plan: PlanDef }) {
         </button>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingRight: showInfo ? 18 : 0, minWidth: 0, minHeight: plan.price ? 88 : undefined }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingRight: showInfo && compactCard ? 18 : 0, minWidth: 0, minHeight: plan.price ? (compactCard ? 88 : 56) : undefined }}>
         <p style={{
           fontFamily: "var(--fontfamilyaccent)",
           fontSize: compactCard ? 13 : 15, lineHeight: '20px', color: '#2c2d2e',
-          margin: 0,
+          margin: 0, paddingRight: showInfo && !compactCard ? 18 : 0,
         }}>
           {plan.cname || plan.name}
         </p>
@@ -1040,7 +1053,7 @@ function PlanCard({ plan }: { plan: PlanDef }) {
       </div>
 
       {plan.price && (
-        <div style={{ position: 'relative', marginTop: 'auto', paddingTop: 22, alignSelf: 'flex-start', maxWidth: '100%' }}>
+        <div style={{ position: 'relative', marginTop: 'auto', paddingTop: compactCard ? 22 : 16, alignSelf: 'flex-start', maxWidth: '100%' }}>
           <button
             type="button"
             onClick={() => setBuyPlanId(plan.id)}
@@ -1059,7 +1072,7 @@ function PlanCard({ plan }: { plan: PlanDef }) {
           </button>
           {badge && (
             <div style={{
-              position: 'absolute', top: compactCard ? 12 : 10, right: compactCard ? -6 : -12,
+              position: 'absolute', top: compactCard ? 12 : 8, ...(compactCard ? { right: -6 } : { left: 45 }),
               transform: 'rotate(5deg)',
               background: '#b8fc75', color: '#087c6d',
               fontFamily: "var(--fontfamilybase)",
@@ -1323,26 +1336,30 @@ function StorageCard() {
               { bg: PG.avatarSvg1, icon: PG.avatarUser },
               { bg: PG.avatarSvg2, icon: PG.avatarUser },
             ] as const).map((a, i) => (
-              <div key={i} style={{
-                width: 32, height: 32, flexShrink: 0, marginRight: -6,
-                borderRadius: '50%',
-                overflow: 'hidden', position: 'relative', zIndex: 3 - i,
-                boxShadow: '0 0 0 2px white',
-                background: '#f6f7f8',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <img src={a.bg} alt="" style={{
-                  position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
-                }} />
-                {a.icon && (
-                  <img src={a.icon} alt="" style={{
-                    position: 'relative', zIndex: 1, width: 16, height: 16, display: 'block',
+              <div key={i} style={{ width: 30, height: 32, flexShrink: 0, marginRight: -6, position: 'relative' }}>
+                {a.icon ? (
+                  <>
+                    <img src={PG.avatarRing} alt="" style={{
+                      position: 'absolute', left: 'calc(50% + 1px)', top: '50%', width: 35, height: 35,
+                      transform: 'translate(-50%, -50%)', display: 'block', maxWidth: 'none',
+                    }} />
+                    <img src={a.bg} alt="" style={{ position: 'absolute', inset: 0, width: 30, height: 32, display: 'block' }} />
+                    <img src={a.icon} alt="" style={{
+                      position: 'absolute', left: 'calc(50% + 1px)', top: '50%', width: 16, height: 16,
+                      transform: 'translate(-50%, -50%)', display: 'block',
+                    }} />
+                  </>
+                ) : (
+                  <img src={a.bg} alt="" style={{
+                    position: 'absolute', inset: 0, width: 30, height: 32, display: 'block', objectFit: 'cover',
+                    WebkitMaskImage: `url(${PG.avatarSvg1})`, maskImage: `url(${PG.avatarSvg1})`,
+                    WebkitMaskSize: '100% 100%', maskSize: '100% 100%',
                   }} />
                 )}
               </div>
             ))}
-            <div style={{ width: 32, height: 32, flexShrink: 0 }}>
-              <img src={PG.counter} alt="" style={{ width: '100%', height: '100%' }} />
+            <div style={{ width: 32, height: 32, flexShrink: 0, position: 'relative' }}>
+              <img src={PG.counter} alt="" style={{ position: 'absolute', inset: -1.5, width: 35, height: 35, display: 'block', maxWidth: 'none' }} />
             </div>
           </div>
         </div>
@@ -1386,7 +1403,7 @@ function ActionsCard() {
   const actions = [
     { icon: PG.promoIcon, label: 'Активация промокода' },
     { icon: PG.histIcon,  label: 'История платежей', sub: paid ? 'Следующий платёж 18 мая 2026' : undefined },
-    { icon: PG.histIcon,  label: 'Банковская карта', sub: paid ? '•••• 0637' : undefined },
+    { icon: PG.payIcon,   label: 'Способы оплаты', sub: paid ? 'Карта или СБП' : undefined, glyph: { w: 17, h: 14 } },
   ]
   const [hovered, setHovered] = useState<string | null>(null)
   return (
@@ -1410,7 +1427,13 @@ function ActionsCard() {
             transition: 'background 120ms ease-out',
           }}>
           <div style={{ background: '#f6f7f8', borderRadius: 20, padding: 8, flexShrink: 0 }}>
-            <img src={a.icon} alt="" style={{ width: 20, height: 20, display: 'block' }} />
+            {a.glyph ? (
+              <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src={a.icon} alt="" style={{ width: a.glyph.w, height: a.glyph.h, display: 'block' }} />
+              </div>
+            ) : (
+              <img src={a.icon} alt="" style={{ width: 20, height: 20, display: 'block' }} />
+            )}
           </div>
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <span style={{ fontFamily: "var(--fontfamilyaccent)", fontSize: 17, lineHeight: '22px', color: '#2c2d2e' }}>
@@ -2129,6 +2152,7 @@ function ComparisonTable() {
   const { plans } = usePlans()
   const { tablePad, bp } = useLayout()
   const { grid, carousel, label, step } = useTableGrid()
+  const headPadB = bp === 'sm' ? 16 : 0
   const [cloudOpen, setCloudOpen] = useState(false)
   const scroller = useRef<HTMLDivElement>(null)
   const headRef = useRef<HTMLDivElement>(null)
@@ -2229,15 +2253,15 @@ function ComparisonTable() {
         style={{ overflowX: carousel ? 'auto' : 'visible', minWidth: 0, borderRadius: '24px 24px 0 0' }}
       >
         <div style={{
-          padding: `${bp === 'sm' ? 16 : 24}px ${tablePad}px 16px`,
+          padding: `${bp === 'sm' ? 16 : 24}px ${tablePad}px ${headPadB}px`,
         }}>
           <div style={{ ...grid, alignItems: bp === 'sm' || bp === 'md' ? 'stretch' : 'start' }}>
             <div data-intro="" style={carousel ? {
               position: 'sticky', left: 0, zIndex: 4, background: '#fff', alignSelf: 'stretch',
               boxSizing: 'border-box', width: label + tablePad, marginLeft: -tablePad, paddingLeft: tablePad,
               boxShadow: '8px 0 0 #fff',
-              marginTop: bp === 'sm' ? -16 : -24, marginBottom: -16,
-              paddingTop: bp === 'sm' ? 16 : 24, paddingBottom: 16,
+              marginTop: bp === 'sm' ? -16 : -24, marginBottom: -headPadB,
+              paddingTop: bp === 'sm' ? 16 : 24, paddingBottom: headPadB,
             } : undefined}>
               <TableIntro />
             </div>
@@ -2275,13 +2299,14 @@ function ComparisonTable() {
         style={{ overflowX: carousel ? 'auto' : 'visible', minWidth: 0, borderRadius: '0 0 24px 24px' }}
       >
       <div style={{
-        padding: `4px ${tablePad}px ${bp === 'sm' ? 24 : 32}px`,
+        padding: `${bp === 'sm' ? 4 : 0}px ${tablePad}px ${bp === 'sm' ? 24 : 32}px`,
       }}>
         {DATA.map((sect, si) => {
           const hidden = sect.rows.some(row => row.more)
           const rows = hidden && !cloudOpen ? sect.rows.filter(row => !row.more) : sect.rows
+          const prevHasToggle = si > 0 && DATA[si - 1].rows.some(row => row.more)
           return (
-            <div key={sect.id} style={{ marginTop: si > 0 ? 20 : 0 }}>
+            <div key={sect.id} style={{ marginTop: si === 0 ? 0 : prevHasToggle ? 8 : 32 }}>
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
                 ...(carousel ? {
@@ -2313,8 +2338,8 @@ function ComparisonTable() {
               </div>
               {hidden && (
                 <div style={carousel
-                  ? { ...grid, paddingTop: 16 }
-                  : { display: 'flex', justifyContent: 'center', paddingTop: 16 }}>
+                  ? { ...grid, paddingTop: 32 }
+                  : { display: 'flex', justifyContent: 'center', paddingTop: 32 }}>
                   <div style={carousel ? {
                     gridColumn: '1 / -1', justifySelf: 'start',
                     position: 'sticky', left: 0, zIndex: 2,
