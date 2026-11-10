@@ -745,11 +745,10 @@ function NewBadge() {
   )
 }
 
-function FeatureRow({ feat, demo, onDemoEnd, onRowHover, rowRef }: {
+function FeatureRow({ feat, demo, onDemoEnd, rowRef }: {
   feat: Feat
   demo?: boolean
   onDemoEnd?: () => void
-  onRowHover?: () => void
   rowRef?: Ref<HTMLDivElement>
 }) {
   const { bp, tablePad, paid } = useLayout()
@@ -758,9 +757,9 @@ function FeatureRow({ feat, demo, onDemoEnd, onRowHover, rowRef }: {
   const [hovered, setHovered] = useState(false)
   const [tip, setTip] = useState<TipState | null>(null)
   const btnRef = useRef<HTMLButtonElement>(null)
-  const hoveredRef = useRef(false)
   const demoRef = useRef(demo)
   const onDemoEndRef = useRef(onDemoEnd)
+  const dismissDemoRef = useRef<(() => void) | null>(null)
   demoRef.current = demo
   onDemoEndRef.current = onDemoEnd
   const canHover = typeof window === 'undefined' || window.matchMedia('(hover: hover)').matches
@@ -799,22 +798,29 @@ function FeatureRow({ feat, demo, onDemoEnd, onRowHover, rowRef }: {
     const finish = () => {
       if (cancelled) return
       cancelled = true
-      setTip(prev => (hoveredRef.current ? (prev ? { ...prev, motion: undefined } : prev) : null))
+      setTip(null)
       onDemoEndRef.current?.()
     }
 
-    later(220, () => {
+    const delay = 220
+    const enter = 700
+    const hold = 5000
+    const exit = 450
+    later(delay, () => {
       if (cancelled) return
       const next = readTip('in')
       if (!next) { finish(); return }
       setTip(next)
     })
-    later(220 + 420 + 2200, () => {
-      if (cancelled) return
-      if (hoveredRef.current) { finish(); return }
+    let leaving = false
+    const leave = () => {
+      if (cancelled || leaving) return
+      leaving = true
       setTip(prev => (prev ? { ...prev, motion: 'out' } : prev))
-    })
-    later(220 + 420 + 2200 + 260, finish)
+      later(exit, finish)
+    }
+    dismissDemoRef.current = leave
+    later(delay + enter + hold, leave)
 
     const onScroll = () => {
       if (cancelled) return
@@ -830,6 +836,7 @@ function FeatureRow({ feat, demo, onDemoEnd, onRowHover, rowRef }: {
     window.addEventListener('resize', onScroll)
     return () => {
       cancelled = true
+      dismissDemoRef.current = null
       timers.forEach(id => window.clearTimeout(id))
       document.removeEventListener('scroll', onScroll, true)
       window.removeEventListener('resize', onScroll)
@@ -848,16 +855,10 @@ function FeatureRow({ feat, demo, onDemoEnd, onRowHover, rowRef }: {
         background: hot ? '#f4f5f6' : 'transparent',
         transition: 'background 180ms cubic-bezier(0.16, 1, 0.3, 1)',
       }}
-      onMouseEnter={() => { hoveredRef.current = true; setHovered(true); onRowHover?.() }}
+      onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => {
-        hoveredRef.current = false
         setHovered(false)
-        if (demoRef.current) {
-          setTip(null)
-          onDemoEndRef.current?.()
-          return
-        }
-        clearTip()
+        if (!demoRef.current) clearTip()
       }}
     >
       <div style={{
@@ -934,7 +935,9 @@ function FeatureRow({ feat, demo, onDemoEnd, onRowHover, rowRef }: {
               className={tip.motion ? 'tip-smart' : undefined}
               data-motion={tip.motion}
               data-side={tip.above ? 'above' : 'below'}
+              onMouseEnter={tip.motion === 'in' ? () => dismissDemoRef.current?.() : undefined}
               style={{
+                pointerEvents: tip.motion === 'in' ? 'auto' : 'none',
                 display: 'flex', flexDirection: tip.above ? 'column' : 'column-reverse', alignItems: 'center',
                 filter: 'drop-shadow(0 0 3px rgba(0,16,61,0.06)) drop-shadow(0 6px 6px rgba(0,16,61,0.06)) drop-shadow(0 6px 10px rgba(0,16,61,0.06)) drop-shadow(0 10px 18px rgba(0,16,61,0.08))',
               }}
@@ -2332,7 +2335,6 @@ function ComparisonTable() {
                     rowRef={si === 0 && feat.id === onboardFeatId ? firstRowRef : undefined}
                     demo={demoId === feat.id}
                     onDemoEnd={() => setDemoId(cur => (cur === feat.id ? null : cur))}
-                    onRowHover={() => setDemoId(cur => (cur && cur !== feat.id ? null : cur))}
                   />
                 ))}
               </div>

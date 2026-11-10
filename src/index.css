@@ -123,7 +123,7 @@ button {
 
 /* Smart-animate tooltip: grows out of the info icon, same idea as a Figma smart animate. */
 .tip-smart {
-  animation-duration: 420ms;
+  animation-duration: 700ms;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   animation-fill-mode: both;
   will-change: transform, opacity;
@@ -131,7 +131,7 @@ button {
 .tip-smart[data-motion="in"] { animation-name: tip-smart-in; }
 .tip-smart[data-motion="out"] {
   animation-name: tip-smart-out;
-  animation-duration: 260ms;
+  animation-duration: 450ms;
   animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
 }
 .tip-smart[data-side="above"] { transform-origin: 50% calc(100% - 5px); }
