@@ -1054,7 +1054,7 @@ function PlanCard({ plan }: { plan: PlanDef }) {
           </button>
           {badge && (
             <div style={{
-              position: 'absolute', top: 2, right: 0,
+              position: 'absolute', top: compactCard ? 12 : 10, right: compactCard ? -6 : -12,
               transform: 'rotate(5deg)',
               background: '#b8fc75', color: '#087c6d',
               fontFamily: "var(--fontfamilybase)",
@@ -2218,6 +2218,7 @@ function ComparisonTable() {
       <div ref={headRef} style={{
         position: carousel ? 'relative' : 'sticky', top: 0, zIndex: 20,
         background: 'white',
+        borderRadius: '24px 24px 0 0',
       }}>
         <div style={{
           padding: `${bp === 'sm' ? 16 : 24}px ${tablePad}px 16px`,
