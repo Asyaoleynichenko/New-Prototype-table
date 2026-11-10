@@ -86,7 +86,6 @@ type BP = 'sm' | 'md' | 'lg' | 'xl'
 const SIDEBAR_W = 264
 const SIDEBAR_GAP = 16
 const CONTENT_DESKTOP = 992
-const DESKTOP_W = 1366
 const CARD_ROW_MIN = 960
 const PLAN_W_DESKTOP = 250
 
@@ -155,12 +154,7 @@ function metricsFor(w: number) {
   const availW = hasSidebar
     ? Math.max(0, w - SIDEBAR_W - SIDEBAR_GAP - pagePad)
     : Math.max(0, w - pagePad * 2)
-  // md/lg keep the Figma ratio 992 / 1366 of the viewport
-  const contentW = bp === 'xl'
-    ? CONTENT_DESKTOP
-    : bp === 'sm'
-      ? availW
-      : Math.min(availW, Math.round(w * CONTENT_DESKTOP / DESKTOP_W))
+  const contentW = bp === 'xl' ? Math.min(availW, CONTENT_DESKTOP) : availW
 
   const stackCards = contentW < CARD_ROW_MIN
 
@@ -713,12 +707,14 @@ function useTableGrid() {
   const { featW, paid, bp } = useLayout()
   const carousel = !paid || bp === 'sm'
   const label = carousel && bp !== 'sm' ? Math.min(featW, 260) : featW
+  const col = bp === 'sm' ? 168 : PLAN_COL
   const grid = carousel
     ? {
         display: 'grid' as const,
-        gridTemplateColumns: `${label}px repeat(${plans.length}, ${bp === 'sm' ? 168 : PLAN_COL}px)`,
+        gridTemplateColumns: `${label}px repeat(${plans.length}, minmax(${col}px, 1fr))`,
         columnGap: 8,
-        width: 'max-content' as const,
+        width: '100%',
+        minWidth: label + plans.length * (col + 8),
       }
     : {
         display: 'grid' as const,
@@ -727,7 +723,7 @@ function useTableGrid() {
         width: '100%',
         minWidth: 0,
       }
-  return { grid, carousel, label, step: (bp === 'sm' ? 168 : PLAN_COL) + 8 }
+  return { grid, carousel, label, step: col + 8 }
 }
 
 function NewBadge() {
@@ -2483,9 +2479,9 @@ export default function App() {
           {m.hasSidebar && <Sidebar />}
 
           <div style={{
-            width: bp === 'sm' ? '100%' : m.contentW,
-            maxWidth: bp === 'sm' ? undefined : m.contentW,
-            flex: bp === 'sm' ? 1 : undefined,
+            width: '100%',
+            maxWidth: bp === 'xl' ? CONTENT_DESKTOP : undefined,
+            flex: 1,
             flexShrink: 1, minWidth: 0,
             display: 'flex', flexDirection: 'column', gap: sectionGap,
           }}>
