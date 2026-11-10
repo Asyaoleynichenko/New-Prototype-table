@@ -2130,7 +2130,6 @@ function ComparisonTable() {
   const firstRowRef = useRef<HTMLDivElement>(null)
   const [demoId, setDemoId] = useState<string | null>(null)
   const [edge, setEdge] = useState({ prev: false, next: false })
-  const [arrowTop, setArrowTop] = useState(96)
   const [viewW, setViewW] = useState(0)
   const onboardFeatId = DATA[0].rows[0].id
 
@@ -2181,19 +2180,23 @@ function ComparisonTable() {
       const max = Math.max(0, el.scrollWidth - el.clientWidth)
       const next = { prev: el.scrollLeft > 8, next: el.scrollLeft < max - 8 }
       setEdge(prev => (prev.prev === next.prev && prev.next === next.next ? prev : next))
-      if (head) {
-        const top = head.offsetTop + head.offsetHeight / 2
-        setArrowTop(prev => (Math.abs(prev - top) < 1 ? prev : top))
-      }
       setViewW(prev => (prev === el.clientWidth ? prev : el.clientWidth))
     }
+    const onBody = () => {
+      if (head && head.scrollLeft !== el.scrollLeft) head.scrollLeft = el.scrollLeft
+      read()
+    }
+    const onHead = () => {
+      if (head && el.scrollLeft !== head.scrollLeft) el.scrollLeft = head.scrollLeft
+    }
     read()
-    el.addEventListener('scroll', read, { passive: true })
+    el.addEventListener('scroll', onBody, { passive: true })
+    head?.addEventListener('scroll', onHead, { passive: true })
     const ro = new ResizeObserver(read)
     ro.observe(el)
-    if (head) ro.observe(head)
     return () => {
-      el.removeEventListener('scroll', read)
+      el.removeEventListener('scroll', onBody)
+      head?.removeEventListener('scroll', onHead)
       ro.disconnect()
     }
   }, [carousel, plans.length, cloudOpen])
@@ -2209,17 +2212,17 @@ function ComparisonTable() {
   }
 
   return (
-    <div id="compare-tariffs" style={{ minWidth: 0, position: 'relative', background: 'white', borderRadius: 24, overflow: carousel ? 'hidden' : 'visible' }}>
-      <div
-        ref={scroller}
-        className={carousel ? 'compare-scroller' : undefined}
-        style={{ overflowX: carousel ? 'auto' : 'visible', minWidth: 0 }}
-      >
-      <div ref={headRef} style={{
-        position: carousel ? 'relative' : 'sticky', top: 0, zIndex: 20,
+    <div id="compare-tariffs" style={{ minWidth: 0, position: 'relative', background: 'white', borderRadius: 24 }}>
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 20,
         background: 'white',
         borderRadius: '24px 24px 0 0',
       }}>
+      <div
+        ref={headRef}
+        className={carousel ? 'compare-scroller' : undefined}
+        style={{ overflowX: carousel ? 'auto' : 'visible', minWidth: 0, borderRadius: '24px 24px 0 0' }}
+      >
         <div style={{
           padding: `${bp === 'sm' ? 16 : 24}px ${tablePad}px 16px`,
         }}>
@@ -2239,7 +2242,33 @@ function ComparisonTable() {
           </div>
         </div>
       </div>
+      {carousel && (edge.next || edge.prev) && (
+        <button
+          type="button"
+          aria-label={edge.next ? 'Следующие тарифы' : 'Предыдущие тарифы'}
+          onClick={() => nudge(edge.next ? 1 : -1)}
+          style={{
+            position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)',
+            width: 40, height: 40, borderRadius: 20, border: 'none', cursor: 'pointer',
+            background: 'white', zIndex: 30,
+            boxShadow: '0 4px 16px rgba(0,16,61,0.16)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+          }}
+        >
+          <img
+            src={PG.arrowRight}
+            alt=""
+            style={{ width: 20, height: 20, display: 'block', transform: edge.next ? undefined : 'rotate(180deg)' }}
+          />
+        </button>
+      )}
+      </div>
 
+      <div
+        ref={scroller}
+        className={carousel ? 'compare-scroller' : undefined}
+        style={{ overflowX: carousel ? 'auto' : 'visible', minWidth: 0, borderRadius: '0 0 24px 24px' }}
+      >
       <div style={{
         padding: `4px ${tablePad}px ${bp === 'sm' ? 24 : 32}px`,
       }}>
@@ -2318,26 +2347,6 @@ function ComparisonTable() {
         })}
       </div>
       </div>
-      {carousel && (edge.next || edge.prev) && (
-        <button
-          type="button"
-          aria-label={edge.next ? 'Следующие тарифы' : 'Предыдущие тарифы'}
-          onClick={() => nudge(edge.next ? 1 : -1)}
-          style={{
-            position: 'absolute', right: 4, top: arrowTop, transform: 'translateY(-50%)',
-            width: 40, height: 40, borderRadius: 20, border: 'none', cursor: 'pointer',
-            background: 'white', zIndex: 30,
-            boxShadow: '0 4px 16px rgba(0,16,61,0.16)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
-          }}
-        >
-          <img
-            src={PG.arrowRight}
-            alt=""
-            style={{ width: 20, height: 20, display: 'block', transform: edge.next ? undefined : 'rotate(180deg)' }}
-          />
-        </button>
-      )}
     </div>
   )
 }
