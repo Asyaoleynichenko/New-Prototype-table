@@ -993,7 +993,7 @@ function PlanCard({ plan }: { plan: PlanDef }) {
       border: plan.border,
       borderRadius: 20,
       padding: compactCard ? '28px 10px 12px' : '16px 20px 20px',
-      height: compactCard ? '100%' : undefined,
+      height: '100%',
       boxSizing: 'border-box',
       display: 'flex',
       flexDirection: 'column',
@@ -2258,7 +2258,7 @@ function ComparisonTable() {
         <div style={{
           padding: `${bp === 'sm' ? 16 : 24}px ${tablePad}px ${headPadB}px`,
         }}>
-          <div style={{ ...grid, alignItems: bp === 'sm' || bp === 'md' ? 'stretch' : 'start' }}>
+          <div style={{ ...grid, alignItems: 'stretch' }}>
             <div data-intro="" style={carousel ? {
               position: 'sticky', left: 0, zIndex: 4, background: '#fff', alignSelf: 'stretch',
               boxSizing: 'border-box', width: label + tablePad, marginLeft: -tablePad, paddingLeft: tablePad,
