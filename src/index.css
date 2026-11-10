@@ -1,0 +1,151 @@
+@import 'tailwindcss';
+
+:root {
+  --fontfamilyaccent: 'VK Sans Display:Medium', 'VK Sans Display', sans-serif;
+  --fontfamilybase: Arial, 'Arial:Regular', sans-serif;
+}
+
+@font-face {
+  font-family: 'Arial';
+  src: url('/fonts/Arial-Regular.woff2') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Arial:Regular';
+  src: url('/fonts/Arial-Regular.woff2') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Arial';
+  src: url('/fonts/Arial-Bold.woff2') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Arial:Bold';
+  src: url('/fonts/Arial-Bold.woff2') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VK Sans Display';
+  src: url('/fonts/VK_Sans_Display-Regular.woff2') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VK Sans Display:Regular';
+  src: url('/fonts/VK_Sans_Display-Regular.woff2') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VK Sans Display';
+  src: url('/fonts/VK_Sans_Display-Medium.woff2') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VK Sans Display:Medium';
+  src: url('/fonts/VK_Sans_Display-Medium.woff2') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VK Sans Display';
+  src: url('/fonts/VK_Sans_Display-DemiBold.woff2') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VK Sans Display:DemiBold';
+  src: url('/fonts/VK_Sans_Display-DemiBold.woff2') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VK Sans Text';
+  src: url('/fonts/VK_Sans_Text-Medium.woff2') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VK Sans Text:Medium';
+  src: url('/fonts/VK_Sans_Text-Medium.woff2') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--fontfamilybase);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+}
+
+.compare-scroller {
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.compare-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smart-animate tooltip: grows out of the info icon, same idea as a Figma smart animate. */
+.tip-smart {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+  will-change: transform, opacity;
+}
+.tip-smart[data-motion="in"] { animation-name: tip-smart-in; }
+.tip-smart[data-motion="out"] {
+  animation-name: tip-smart-out;
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
+}
+.tip-smart[data-side="above"] { transform-origin: 50% calc(100% - 5px); }
+.tip-smart[data-side="below"] { transform-origin: 50% 5px; }
+
+@keyframes tip-smart-in {
+  from { opacity: 0; transform: scale(0.72); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes tip-smart-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.8); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tip-smart { animation: none; }
+}
