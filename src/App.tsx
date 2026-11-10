@@ -84,6 +84,7 @@ type BP = 'sm' | 'md' | 'lg' | 'xl'
 const SIDEBAR_W = 264
 const SIDEBAR_GAP = 16
 const CONTENT_DESKTOP = 992
+const DESKTOP_W = 1366
 const CARD_ROW_MIN = 960
 const PLAN_W_DESKTOP = 250
 
@@ -149,11 +150,15 @@ function metricsFor(w: number) {
   const hasSidebar = bp === 'xl' || bp === 'lg'
 
   // Real available width for the main column (include sidebar gap)
+  const availW = hasSidebar
+    ? Math.max(0, w - SIDEBAR_W - SIDEBAR_GAP - pagePad)
+    : Math.max(0, w - pagePad * 2)
+  // md/lg keep the Figma ratio 992 / 1366 of the viewport
   const contentW = bp === 'xl'
     ? CONTENT_DESKTOP
-    : hasSidebar
-      ? Math.max(0, w - SIDEBAR_W - SIDEBAR_GAP - pagePad)
-      : Math.max(0, w - pagePad * 2)
+    : bp === 'sm'
+      ? availW
+      : Math.min(availW, Math.round(w * CONTENT_DESKTOP / DESKTOP_W))
 
   const stackCards = contentW < CARD_ROW_MIN
 
@@ -2451,9 +2456,9 @@ export default function App() {
           {m.hasSidebar && <Sidebar />}
 
           <div style={{
-            width: bp === 'xl' ? CONTENT_DESKTOP : '100%',
-            maxWidth: bp === 'xl' ? CONTENT_DESKTOP : undefined,
-            flex: bp === 'xl' ? undefined : 1,
+            width: bp === 'sm' ? '100%' : m.contentW,
+            maxWidth: bp === 'sm' ? undefined : m.contentW,
+            flex: bp === 'sm' ? 1 : undefined,
             flexShrink: 1, minWidth: 0,
             display: 'flex', flexDirection: 'column', gap: sectionGap,
           }}>
