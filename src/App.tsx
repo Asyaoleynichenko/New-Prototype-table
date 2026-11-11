@@ -1901,7 +1901,7 @@ function ActiveTariffsCard() {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, width: '100%', flexWrap: 'wrap' }}>
         <span style={{ fontFamily: "var(--fontfamilyaccent)", fontSize: 17, lineHeight: '22px', color: '#2c2d2e', flex: '1 1 240px', minWidth: 0 }}>
-          {paid ? 'У вас 3 активных тарифа и всего 584 ГБ' : 'У вас 1 активный тариф, 8 ГБ'}
+          {paid ? 'У вас 3 активных тарифа и всего 648 ГБ' : 'У вас 1 активный тариф, 8 ГБ'}
         </span>
         <button
             type="button"
@@ -1958,9 +1958,9 @@ function ActiveTariffsCard() {
         </div>
 
         {paid && ([
-          { id: '512', title: '512\u00a0ГБ\u00a0на\u00a0месяц', sub: 'Следующий платёж 20\u00a0апреля 2026', badgeBg: 'rgba(0,119,255,0.14)' },
-          { id: '64a', title: '64\u00a0ГБ\u00a0на\u00a0месяц', sub: 'Следующий платёж 18\u00a0мая 2026', badgeBg: 'rgba(0,119,255,0.1)' },
-          { id: '64b', title: '64\u00a0ГБ\u00a0на\u00a0месяц', sub: 'Следующий платёж 18\u00a0мая 2026', badgeBg: 'rgba(0,119,255,0.1)' },
+          { id: '512', title: '512\u00a0ГБ\u00a0на\u00a0месяц', sub: 'Следующий платёж 20\u00a0апреля 2026', badge: 'Минимальный', badgeBg: 'rgba(0,119,255,0.14)' },
+          { id: '64a', title: '64\u00a0ГБ\u00a0на\u00a0месяц', sub: 'Следующий платёж 18\u00a0мая 2026', badge: 'Основной', badgeBg: 'rgba(0,119,255,0.1)' },
+          { id: '64b', title: '64\u00a0ГБ\u00a0на\u00a0месяц', sub: 'Следующий платёж 18\u00a0мая 2026', badge: 'Минимальный', badgeBg: 'rgba(0,119,255,0.1)' },
         ] as const).map(t => (
           <div key={t.id} style={{ background: 'rgba(0,119,255,0.06)', borderRadius: 16, ...tile, minHeight: 92, display: 'flex', alignItems: 'flex-start', overflow: 'hidden', boxSizing: 'border-box', position: 'relative' }}>
             <div style={{
@@ -1969,7 +1969,7 @@ function ActiveTariffsCard() {
               height: 21, padding: '3px 12px 4px', boxSizing: 'border-box',
               display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
             }}>
-              <span style={{ fontFamily: "var(--fontfamilybase)", fontSize: 11, lineHeight: '14px', color: '#1c4479' }}>Минимальный</span>
+              <span style={{ fontFamily: "var(--fontfamilybase)", fontSize: 11, lineHeight: '14px', color: '#1c4479' }}>{t.badge}</span>
             </div>
             <div style={{ padding: 16, display: 'flex', alignItems: 'flex-start' }}>
               <div style={{ width: 32, height: 32, borderRadius: 100, overflow: 'hidden', background: '#07f' }}>
